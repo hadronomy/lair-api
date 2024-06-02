@@ -1,12 +1,8 @@
 package models
 
-import (
-	"gorm.io/gorm"
-)
-
 type Minion struct {
-	gorm.Model
-	ID    int
-	Name  string
-	Level int
+	Model
+	ID    int    `json:"id"`
+	Name  string `json:"name"`
+	Level int    `json:"level"`
 }

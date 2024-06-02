@@ -2,37 +2,21 @@ package models
 
 import (
 	"net/http"
-
-	"gorm.io/gorm"
 )
 
 type Lair struct {
-	gorm.Model
-	Name      string
-	Owner     string
-	Private   bool
-	Treasures []Treasure `gorm:"many2many:lair_treasures;"`
-	Minions   []Minion   `gorm:"many2many:lair_minions;"`
+	Model
+	Name      string     `json:"name"`
+	Owner     string     `json:"owner"`
+	Private   bool       `json:"private"`
+	Treasures []Treasure `json:"treasures" gorm:"many2many:lair_treasures;"`
+	Minions   []Minion   `json:"minions" gorm:"many2many:lair_minions;"`
 }
 
 type LairRequest struct {
-	Name    string
-	Owner   string
-	Private bool
-}
-
-func (l *LairRequest) Bind(r *http.Request) error {
-	return nil
-}
-
-func (l *LairRequest) ToLair(id int) Lair {
-	return Lair{
-		Name:      l.Name,
-		Owner:     l.Owner,
-		Private:   l.Private,
-		Treasures: []Treasure{},
-		Minions:   []Minion{},
-	}
+	Name    string `json:"name" required:"false"`
+	Owner   string `json:"owner" required:"false"`
+	Private bool   `json:"private" required:"false"`
 }
 
 func (l *Lair) Bind(r *http.Request) error {
