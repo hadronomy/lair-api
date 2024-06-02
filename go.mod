@@ -3,6 +3,7 @@ module lair-api
 go 1.22.3
 
 require (
+	github.com/danielgtaylor/huma/v2 v2.17.0
 	github.com/go-chi/chi/v5 v5.0.12
 	github.com/go-chi/render v1.0.3
 	github.com/jackc/pgx/v5 v5.6.0
@@ -14,7 +15,6 @@ require (
 
 require (
 	github.com/ajg/form v1.5.1 // indirect
-	github.com/danielgtaylor/huma/v2 v2.17.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20231201235250-de7065d80cb9 // indirect
