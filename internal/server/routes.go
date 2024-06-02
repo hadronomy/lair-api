@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
 	"github.com/danielgtaylor/huma/v2"
@@ -14,21 +13,21 @@ import (
 	"lair-api/internal/models"
 )
 
-type GreatingOutput struct {
+type GreatingResponse struct {
 	Body struct {
 		Message string `json:"name"`
 	}
 }
 
-type GetLairsOutput struct {
+type GetLairsResponse struct {
 	Body []models.Lair
 }
 
-type GetLairOutput struct {
+type GetLairResponse struct {
 	Body models.Lair
 }
 
-type UpdateLairsOutput struct {
+type UpdateLairsResponse struct {
 	Body models.Lair
 }
 
@@ -68,8 +67,8 @@ func (s *Server) RegisterRoutes() http.Handler {
 		Method:      http.MethodGet,
 		Path:        "/hello",
 		Summary:     "Greating",
-	}, func(ctx context.Context, input *struct{}) (*GreatingOutput, error) {
-		resp := &GreatingOutput{}
+	}, func(ctx context.Context, input *struct{}) (*GreatingResponse, error) {
+		resp := &GreatingResponse{}
 		resp.Body.Message = "Hello, World!"
 		return resp, nil
 	})
@@ -79,10 +78,10 @@ func (s *Server) RegisterRoutes() http.Handler {
 		Method:      http.MethodGet,
 		Path:        "/lairs",
 		Summary:     "List Lairs",
-	}, func(ctx context.Context, input *struct{}) (*GetLairsOutput, error) {
+	}, func(ctx context.Context, input *struct{}) (*GetLairsResponse, error) {
 		var lairs []models.Lair
 		s.db.GetDB().Find(&lairs)
-		return &GetLairsOutput{
+		return &GetLairsResponse{
 			Body: lairs,
 		}, nil
 	})
@@ -94,12 +93,12 @@ func (s *Server) RegisterRoutes() http.Handler {
 		Summary:     "Get a Lair",
 	}, func(ctx context.Context, input *struct {
 		LairID string `path:"lairID"`
-	}) (*GetLairOutput, error) {
+	}) (*GetLairResponse, error) {
 		var lair models.Lair
 		if s.db.GetDB().Where("id = ?", input.LairID).First(&lair).Error != nil {
-			return nil, fmt.Errorf("lair not found")
+			return nil, huma.Error404NotFound("lair not found")
 		}
-		return &GetLairOutput{
+		return &GetLairResponse{
 			Body: lair,
 		}, nil
 	})
@@ -112,13 +111,13 @@ func (s *Server) RegisterRoutes() http.Handler {
 	}, func(ctx context.Context, input *struct {
 		ID   string             `path:"lairID"`
 		Body models.LairRequest `json:"body"`
-	}) (*UpdateLairsOutput, error) {
+	}) (*UpdateLairsResponse, error) {
 		var lair models.Lair
 		if s.db.GetDB().Where("id = ?", input.ID).First(&lair).Error != nil {
-			return nil, fmt.Errorf("lair not found")
+			return nil, huma.Error404NotFound("lair not found")
 		}
 		s.db.GetDB().Model(&lair).Updates(input.Body)
-		return &UpdateLairsOutput{
+		return &UpdateLairsResponse{
 			Body: lair,
 		}, nil
 	})
@@ -130,13 +129,13 @@ func (s *Server) RegisterRoutes() http.Handler {
 		Summary:     "Delete a Lair",
 	}, func(ctx context.Context, input *struct {
 		LairID string `path:"lairID"`
-	}) (*UpdateLairsOutput, error) {
+	}) (*UpdateLairsResponse, error) {
 		var lair models.Lair
 		if s.db.GetDB().Where("id = ?", input.LairID).First(&lair).Error != nil {
-			return nil, fmt.Errorf("lair not found")
+			return nil, huma.Error404NotFound("lair not found")
 		}
 		s.db.GetDB().Delete(&lair, input.LairID)
-		return &UpdateLairsOutput{
+		return &UpdateLairsResponse{
 			Body: lair,
 		}, nil
 	})
