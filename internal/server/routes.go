@@ -60,7 +60,39 @@ func (s *Server) RegisterRoutes() http.Handler {
 	})
 
 	config := huma.DefaultConfig("Lair API", "1.0.0")
+	config.DocsPath = ""
 	api := humachi.New(r, config)
+
+	r.Get("/docs", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/html")
+		w.Write([]byte(`<!doctype html>
+	<html>
+		<head>
+			<title>API Reference</title>
+			<meta charset="utf-8" />
+			<meta
+				name="viewport"
+				content="width=device-width, initial-scale=1" />
+		</head>
+		<body>
+			<script
+			id="api-reference"
+			data-url="/openapi.json"
+			data-proxy-url="https://proxy.scalar.com"></script>
+
+			<!-- Optional: You can set a full configuration object like this: -->
+			<script>
+				var configuration = {
+					theme: 'bluePlanet',
+				}
+
+				document.getElementById('api-reference').dataset.configuration =
+					JSON.stringify(configuration)
+			</script>
+			<script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
+		</body>
+	</html>`))
+	})
 
 	huma.Register(api, huma.Operation{
 		OperationID: "get-hello",
@@ -83,6 +115,25 @@ func (s *Server) RegisterRoutes() http.Handler {
 		s.db.GetDB().Find(&lairs)
 		return &GetLairsResponse{
 			Body: lairs,
+		}, nil
+	})
+
+	huma.Register(api, huma.Operation{
+		OperationID: "create-lair",
+		Method:      http.MethodPost,
+		Path:        "/lair",
+		Summary:     "Create a Lair",
+	}, func(ctx context.Context, input *struct {
+		Body models.LairRequest `json:"body"`
+	}) (*UpdateLairsResponse, error) {
+		lair := models.Lair{
+			Name:    input.Body.Name,
+			Owner:   input.Body.Owner,
+			Private: input.Body.Private,
+		}
+		s.db.GetDB().Create(&lair)
+		return &UpdateLairsResponse{
+			Body: lair,
 		}, nil
 	})
 
