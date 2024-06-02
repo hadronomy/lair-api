@@ -19,12 +19,14 @@ type Server struct {
 }
 
 func NewServer() *http.Server {
-	port, _ := strconv.Atoi(os.Getenv("PORT"))
+	env_port := os.Getenv("PORT")
+	port, _ := strconv.Atoi(env_port)
 	NewServer := &Server{
 		port: port,
 
 		db: database.New(),
 	}
+	println("Server is running on port: ", NewServer.port)
 
 	// Declare Server config
 	server := &http.Server{
