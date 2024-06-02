@@ -31,34 +31,10 @@ type UpdateLairsResponse struct {
 	Body models.Lair
 }
 
-func (s *Server) RegisterRoutes() http.Handler {
-	r := chi.NewMux()
-
-	r.Use(middleware.RealIP)
-	r.Use(middleware.RequestID)
-	r.Use(middleware.Logger)
-	r.Use(middleware.Heartbeat("/ping"))
-	r.Use(middleware.Recoverer)
-	r.Use(render.SetContentType(render.ContentTypeJSON))
-
-	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
-		render.JSON(w, r, &huma.ErrorModel{
-			Title:    "Resource not found",
-			Status:   http.StatusNotFound,
-			Detail:   "The requested resource was not found, check the URL and try again.",
-			Instance: r.URL.Path,
-		})
-	})
-
-	r.MethodNotAllowed(func(w http.ResponseWriter, r *http.Request) {
-		render.JSON(w, r, &huma.ErrorModel{
-			Title:    "Method not allowed",
-			Status:   http.StatusMethodNotAllowed,
-			Detail:   "The requested method is not allowed for the resource, check the documentation and try again.",
-			Instance: r.URL.Path,
-		})
-	})
-
+// ConfigureApi configures the API routes and returns a huma.API instance.
+// It takes a chi.Mux instance as a parameter and sets up the necessary routes and configurations.
+// The function returns the configured huma.API instance.
+func (s *Server) configureApi(r *chi.Mux) huma.API {
 	config := huma.DefaultConfig("Lair API", "1.0.0")
 	config.DocsPath = ""
 	api := humachi.New(r, config)
@@ -94,6 +70,49 @@ func (s *Server) RegisterRoutes() http.Handler {
 	</html>`))
 	})
 
+	return api
+}
+
+// ConfigureRouter configures the router for the server.
+// It sets up various middlewares and handles not found and method not allowed routes.
+// Returns the configured router.
+func (s *Server) configureRouter() *chi.Mux {
+	r := chi.NewMux()
+
+	r.Use(middleware.RealIP)
+	r.Use(middleware.RequestID)
+	r.Use(middleware.Logger)
+	r.Use(middleware.Heartbeat("/ping"))
+	r.Use(middleware.Recoverer)
+	r.Use(render.SetContentType(render.ContentTypeJSON))
+
+	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
+		render.JSON(w, r, &huma.ErrorModel{
+			Title:    "Resource not found",
+			Status:   http.StatusNotFound,
+			Detail:   "The requested resource was not found, check the URL and try again.",
+			Instance: r.URL.Path,
+		})
+	})
+
+	r.MethodNotAllowed(func(w http.ResponseWriter, r *http.Request) {
+		render.JSON(w, r, &huma.ErrorModel{
+			Title:    "Method not allowed",
+			Status:   http.StatusMethodNotAllowed,
+			Detail:   "The requested method is not allowed for the resource, check the documentation and try again.",
+			Instance: r.URL.Path,
+		})
+	})
+
+	return r
+}
+
+// RegisterRoutes registers the routes for the server.
+// It returns an http.Handler that can be used to handle HTTP requests.
+func (s *Server) RegisterRoutes() http.Handler {
+	r := s.configureRouter()
+	api := s.configureApi(r)
+
 	huma.Register(api, huma.Operation{
 		OperationID: "get-hello",
 		Method:      http.MethodGet,
@@ -110,6 +129,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 		Method:      http.MethodGet,
 		Path:        "/lairs",
 		Summary:     "List Lairs",
+		Tags:        []string{"Lairs"},
 	}, func(ctx context.Context, input *struct{}) (*GetLairsResponse, error) {
 		var lairs []models.Lair
 		s.db.GetDB().Find(&lairs)
@@ -123,6 +143,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 		Method:      http.MethodPost,
 		Path:        "/lair",
 		Summary:     "Create a Lair",
+		Tags:        []string{"Lairs"},
 	}, func(ctx context.Context, input *struct {
 		Body models.LairRequest `json:"body"`
 	}) (*UpdateLairsResponse, error) {
@@ -142,6 +163,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 		Method:      http.MethodGet,
 		Path:        "/lair/{lairID}",
 		Summary:     "Get a Lair",
+		Tags:        []string{"Lairs"},
 	}, func(ctx context.Context, input *struct {
 		LairID string `path:"lairID"`
 	}) (*GetLairResponse, error) {
@@ -159,6 +181,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 		Method:      http.MethodPut,
 		Path:        "/lair/{lairID}",
 		Summary:     "Update a Lair",
+		Tags:        []string{"Lairs"},
 	}, func(ctx context.Context, input *struct {
 		ID   string             `path:"lairID"`
 		Body models.LairRequest `json:"body"`
@@ -178,6 +201,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 		Method:      http.MethodDelete,
 		Path:        "/lair/{lairID}",
 		Summary:     "Delete a Lair",
+		Tags:        []string{"Lairs"},
 	}, func(ctx context.Context, input *struct {
 		LairID string `path:"lairID"`
 	}) (*UpdateLairsResponse, error) {
