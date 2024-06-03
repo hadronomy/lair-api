@@ -10,7 +10,7 @@ import (
 	"github.com/charmbracelet/log"
 	"github.com/danielgtaylor/huma/v2/humacli"
 
-	"lair-api/internal/server"
+	"lair-api/internal/server/api"
 )
 
 type Options struct {
@@ -18,7 +18,7 @@ type Options struct {
 
 func main() {
 	cli := humacli.New(func(hooks humacli.Hooks, options *Options) {
-		server := server.NewServer()
+		server := api.NewServer()
 
 		hooks.OnStart(func() {
 			printBanner(server)
