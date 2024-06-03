@@ -43,7 +43,7 @@ func (l *LairResource) Init(api huma.API, s server.Server) {
 	huma.Register(api, huma.Operation{
 		OperationID: "create-lair",
 		Method:      http.MethodPost,
-		Path:        "/lair",
+		Path:        "/lairs",
 		Summary:     "Create a Lair",
 		Tags:        []string{"Lairs"},
 	}, func(ctx context.Context, input *struct {
@@ -72,7 +72,7 @@ func (l *LairResource) Init(api huma.API, s server.Server) {
 	huma.Register(api, huma.Operation{
 		OperationID: "get-lair",
 		Method:      http.MethodGet,
-		Path:        "/lair/{lairID}",
+		Path:        "/lairs/{lairID}",
 		Summary:     "Get a Lair",
 		Tags:        []string{"Lairs"},
 	}, func(ctx context.Context, input *struct {
@@ -90,7 +90,7 @@ func (l *LairResource) Init(api huma.API, s server.Server) {
 	huma.Register(api, huma.Operation{
 		OperationID: "update-lair",
 		Method:      http.MethodPut,
-		Path:        "/lair/{lairID}",
+		Path:        "/lairs/{lairID}",
 		Summary:     "Update a Lair",
 		Tags:        []string{"Lairs"},
 	}, func(ctx context.Context, input *struct {
@@ -110,7 +110,7 @@ func (l *LairResource) Init(api huma.API, s server.Server) {
 	huma.Register(api, huma.Operation{
 		OperationID: "delete-lair",
 		Method:      http.MethodDelete,
-		Path:        "/lair/{lairID}",
+		Path:        "/lairs/{lairID}",
 		Summary:     "Delete a Lair",
 		Tags:        []string{"Lairs"},
 	}, func(ctx context.Context, input *struct {
