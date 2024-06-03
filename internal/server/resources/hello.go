@@ -23,6 +23,7 @@ func (l *HelloResource) Init(api huma.API, s server.Server) {
 		Method:      http.MethodGet,
 		Path:        "/hello",
 		Summary:     "Greating",
+		Tags:        []string{"Miscellaneous"},
 	}, func(ctx context.Context, input *struct{}) (*GreatingResponse, error) {
 		resp := &GreatingResponse{}
 		resp.Body.Message = "Hello, World!"
