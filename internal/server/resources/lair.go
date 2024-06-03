@@ -6,6 +6,7 @@ import (
 
 	"github.com/danielgtaylor/huma/v2"
 
+	"lair-api/internal/crypto"
 	"lair-api/internal/models"
 	"lair-api/internal/server"
 )
@@ -48,12 +49,21 @@ func (l *LairResource) Init(api huma.API, s server.Server) {
 	}, func(ctx context.Context, input *struct {
 		Body models.LairRequest `json:"body"`
 	}) (*UpdateLairsResponse, error) {
+		id, err := crypto.GenerateID()
+		if err != nil {
+			return nil, huma.Error500InternalServerError("failed to generate ID")
+		}
 		lair := models.Lair{
+			Model: models.Model{
+				ID: id,
+			},
 			Name:    input.Body.Name,
 			Owner:   input.Body.Owner,
 			Private: input.Body.Private,
 		}
-		s.GetDB().Create(&lair)
+		if err := s.GetDB().Create(&lair).Error; err != nil {
+			return nil, huma.Error500InternalServerError("failed to create lair")
+		}
 		return &UpdateLairsResponse{
 			Body: lair,
 		}, nil
