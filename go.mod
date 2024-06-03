@@ -3,6 +3,7 @@ module lair-api
 go 1.22.3
 
 require (
+	github.com/charmbracelet/log v0.4.0
 	github.com/danielgtaylor/huma/v2 v2.17.0
 	github.com/go-chi/chi/v5 v5.0.12
 	github.com/go-chi/render v1.0.3
@@ -17,7 +18,6 @@ require (
 	github.com/ajg/form v1.5.1 // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
 	github.com/charmbracelet/lipgloss v0.10.0 // indirect
-	github.com/charmbracelet/log v0.4.0 // indirect
 	github.com/go-logfmt/logfmt v0.6.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
