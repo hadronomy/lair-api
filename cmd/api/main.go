@@ -2,9 +2,10 @@ package main
 
 import (
 	"context"
-	"log"
+	"net/http"
 	"time"
 
+	"github.com/charmbracelet/log"
 	"github.com/danielgtaylor/huma/v2/humacli"
 
 	"lair-api/internal/server"
@@ -18,8 +19,11 @@ func main() {
 		server := server.NewServer()
 
 		hooks.OnStart(func() {
+			log.Infof("Server is running on http://localhost%s", server.Addr)
 			if err := server.ListenAndServe(); err != nil {
-				log.Printf("failed to start server: %v", err)
+				if err != http.ErrServerClosed {
+					log.Fatalf("Server error: %v", err)
+				}
 			}
 		})
 

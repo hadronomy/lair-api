@@ -26,7 +26,6 @@ func NewServer() *http.Server {
 
 		db: database.New(),
 	}
-	println("Server is running on port: ", NewServer.port)
 
 	// Declare Server config
 	server := &http.Server{

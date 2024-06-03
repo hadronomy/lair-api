@@ -10,6 +10,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 
+	"lair-api/internal/logger"
 	"lair-api/internal/models"
 )
 
@@ -225,4 +226,15 @@ func (s *Server) RegisterRoutes() http.Handler {
 	// })
 	// r.Get("/health", s.healthHandler)
 	return r
+}
+
+func init() {
+	stdlog := logger.GetDefault().StandardLog()
+	middleware.DefaultLogger =
+		middleware.RequestLogger(
+			&middleware.DefaultLogFormatter{
+				Logger:  stdlog,
+				NoColor: false,
+			},
+		)
 }
