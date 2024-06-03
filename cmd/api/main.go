@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"time"
 
+	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/log"
 	"github.com/danielgtaylor/huma/v2/humacli"
 
@@ -19,7 +21,7 @@ func main() {
 		server := server.NewServer()
 
 		hooks.OnStart(func() {
-			log.Infof("Server is running on http://localhost%s", server.Addr)
+			printBanner(server)
 			if err := server.ListenAndServe(); err != nil {
 				if err != http.ErrServerClosed {
 					log.Fatalf("Server error: %v", err)
@@ -34,4 +36,35 @@ func main() {
 		})
 	})
 	cli.Run()
+}
+
+func printBanner(server *http.Server) {
+	style := lipgloss.NewStyle().
+		Padding(1, 10).
+		BorderStyle(lipgloss.RoundedBorder()).
+		BorderForeground(lipgloss.Color("63")).
+		BorderTop(true).
+		BorderBottom(true).
+		BorderLeft(true).
+		BorderRight(true)
+
+	title := lipgloss.NewStyle().
+		PaddingBottom(1).
+		Foreground(lipgloss.Color("255")).
+		Bold(true).
+		Render(
+			"LAIR API",
+		)
+	url := lipgloss.NewStyle().
+		Foreground(lipgloss.Color("86")).
+		Render(
+			fmt.Sprintf("http://localhost%s", server.Addr),
+		)
+	descriptionStyle := lipgloss.NewStyle().Faint(true)
+	description := descriptionStyle.Render(
+		fmt.Sprintf("(bound on host 0.0.0.0 and port %s)", server.Addr),
+	)
+	block := lipgloss.JoinVertical(lipgloss.Center, title, url, description)
+	fmt.Println()
+	fmt.Println(style.Render(block))
 }
