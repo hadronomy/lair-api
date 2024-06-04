@@ -27,11 +27,19 @@ type LairResource struct{}
 
 func (l *LairResource) Init(api huma.API, s server.Server) {
 	huma.Register(api, huma.Operation{
-		OperationID: "get-lairs",
+		OperationID: "list-lairs",
 		Method:      http.MethodGet,
 		Path:        "/lairs",
 		Summary:     "List Lairs",
 		Tags:        []string{"Lairs"},
+		Extensions: map[string]interface{}{
+			"x-cli-aliases": []string{
+				"ls-lairs",
+				"get-lairs",
+				"lairs",
+				"ls-lair",
+			},
+		},
 	}, func(ctx context.Context, input *struct{}) (*GetLairsResponse, error) {
 		var lairs []models.Lair
 		s.GetDB().Find(&lairs)
@@ -120,7 +128,7 @@ func (l *LairResource) Init(api huma.API, s server.Server) {
 		if s.GetDB().Where("id = ?", input.LairID).First(&lair).Error != nil {
 			return nil, huma.Error404NotFound("lair not found")
 		}
-		s.GetDB().Delete(&lair, input.LairID)
+		s.GetDB().Delete(&lair)
 		return &UpdateLairsResponse{
 			Body: lair,
 		}, nil
