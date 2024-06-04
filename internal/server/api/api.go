@@ -38,6 +38,10 @@ func NewServer() *http.Server {
 	return server
 }
 
+func (s *APIServer) GetDBService() database.Service {
+	return s.db
+}
+
 func (s *APIServer) GetDB() *gorm.DB {
 	return s.db.GetDB()
 }

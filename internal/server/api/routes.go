@@ -97,6 +97,7 @@ func (s *APIServer) RegisterRoutes() http.Handler {
 
 	resources.Register(api, s, &resources.LairResource{})
 	resources.Register(api, s, &resources.HelloResource{})
+	resources.Register(api, s, &resources.HealthResource{})
 
 	// TODO: Add health check route
 	// huma.Register(api, huma.Operation{
