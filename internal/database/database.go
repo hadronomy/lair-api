@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"strconv"
 	"time"
 
 	"github.com/charmbracelet/log"
@@ -12,7 +11,6 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"gorm.io/plugin/dbresolver"
 
 	"lair-api/internal/models"
 )
@@ -57,15 +55,24 @@ func New() Service {
 		log.Fatalf("failed to connect to database: %v", err)
 	}
 
-	db.Use(
-		dbresolver.Register(dbresolver.Config{
-			Sources: []gorm.Dialector{postgres.Open(connStr)},
-		}).
-			SetConnMaxIdleTime(time.Hour).
-			SetConnMaxLifetime(24 * time.Hour).
-			SetMaxIdleConns(100).
-			SetMaxOpenConns(200),
-	)
+	sqlDB, err := db.DB()
+	if err != nil {
+		log.Fatalf("failed to get db instance: %v", err)
+	}
+	sqlDB.SetConnMaxIdleTime(time.Hour)
+	sqlDB.SetConnMaxLifetime(24 * time.Hour)
+	sqlDB.SetMaxIdleConns(100)
+	sqlDB.SetMaxOpenConns(200)
+
+	// db.Use(
+	// 	dbresolver.Register(dbresolver.Config{
+	// 		Sources: []gorm.Dialector{postgres.Open(connStr)},
+	// 	}).
+	// 		SetConnMaxIdleTime(time.Hour).
+	// 		SetConnMaxLifetime(24 * time.Hour).
+	// 		SetMaxIdleConns(100).
+	// 		SetMaxOpenConns(200),
+	// )
 
 	db.AutoMigrate(&models.Lair{})
 
@@ -91,13 +98,13 @@ type DatabaseHealth struct {
 	Status            Status `json:"status"`
 	Message           string `json:"message,omitempty" required:"false"`
 	Error             string `json:"error,omitempty" required:"false"`
-	OpenConnections   string `json:"open_connections,omitempty" required:"false"`
-	InUse             string `json:"in_use,omitempty" required:"false"`
-	Idle              string `json:"idle,omitempty" required:"false"`
-	WaitCount         string `json:"wait_count,omitempty" required:"false"`
+	OpenConnections   int    `json:"open_connections,omitempty" required:"false"`
+	InUse             int    `json:"in_use,omitempty" required:"false"`
+	Idle              int    `json:"idle,omitempty" required:"false"`
+	WaitCount         int64  `json:"wait_count,omitempty" required:"false"`
 	WaitDuration      string `json:"wait_duration,omitempty" required:"false"`
-	MaxIdleClosed     string `json:"max_idle_closed,omitempty" required:"false"`
-	MaxLifetimeClosed string `json:"max_lifetime_closed,omitempty" required:"false"`
+	MaxIdleClosed     int64  `json:"max_idle_closed,omitempty" required:"false"`
+	MaxLifetimeClosed int64  `json:"max_lifetime_closed,omitempty" required:"false"`
 }
 
 // Health checks the health of the database connection by pinging the database.
@@ -113,7 +120,7 @@ func (s *dbService) Health() interface{} {
 	if err != nil {
 		stats.Status = StatusDown
 		stats.Error = fmt.Sprintf("db down: %v", err)
-		log.Fatalf(fmt.Sprintf("db down: %v", err)) // Log the error and terminate the program
+		log.Error(fmt.Sprintf("db down: %v", err)) // Log the error and terminate the program
 		return stats
 	}
 
@@ -121,7 +128,7 @@ func (s *dbService) Health() interface{} {
 	if err != nil {
 		stats.Status = StatusDown
 		stats.Error = fmt.Sprintf("db down: %v", err)
-		log.Fatalf(fmt.Sprintf("db down: %v", err)) // Log the error and terminate the program
+		log.Errorf(fmt.Sprintf("db down: %v", err)) // Log the error and terminate the program
 		return stats
 	}
 
@@ -131,13 +138,15 @@ func (s *dbService) Health() interface{} {
 
 	// Get database stats (like open connections, in use, idle, etc.)
 	dbStats := db.Stats()
-	stats.OpenConnections = strconv.Itoa(dbStats.OpenConnections)
-	stats.InUse = strconv.Itoa(dbStats.InUse)
-	stats.Idle = strconv.Itoa(dbStats.Idle)
-	stats.WaitCount = strconv.FormatInt(dbStats.WaitCount, 10)
-	stats.WaitDuration = dbStats.WaitDuration.String()
-	stats.MaxIdleClosed = strconv.FormatInt(dbStats.MaxIdleClosed, 10)
-	stats.MaxLifetimeClosed = strconv.FormatInt(dbStats.MaxLifetimeClosed, 10)
+	stats.OpenConnections = dbStats.OpenConnections
+	stats.InUse = dbStats.InUse
+	stats.Idle = dbStats.Idle
+	stats.WaitCount = dbStats.WaitCount
+	if dbStats.WaitDuration > 0 {
+		stats.WaitDuration = dbStats.WaitDuration.String()
+	}
+	stats.MaxIdleClosed = dbStats.MaxIdleClosed
+	stats.MaxLifetimeClosed = dbStats.MaxLifetimeClosed
 
 	// Evaluate stats to provide a health message
 	if dbStats.OpenConnections > 40 { // Assuming 50 is the max for this example
