@@ -9,8 +9,8 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 
-	"lair-api/internal/logger"
-	"lair-api/internal/server/resources"
+	"github.com/hadronomy/lair-api/internal/logger"
+	"github.com/hadronomy/lair-api/internal/server/resources"
 )
 
 // ConfigureApi configures the API routes and returns a huma.API instance.
@@ -114,11 +114,10 @@ func (s *APIServer) RegisterRoutes() http.Handler {
 
 func init() {
 	stdlog := logger.GetDefault().StandardLog()
-	middleware.DefaultLogger =
-		middleware.RequestLogger(
-			&middleware.DefaultLogFormatter{
-				Logger:  stdlog,
-				NoColor: false,
-			},
-		)
+	middleware.DefaultLogger = middleware.RequestLogger(
+		&middleware.DefaultLogFormatter{
+			Logger:  stdlog,
+			NoColor: false,
+		},
+	)
 }

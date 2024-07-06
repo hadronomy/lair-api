@@ -6,7 +6,7 @@ import (
 
 	"github.com/danielgtaylor/huma/v2"
 
-	"lair-api/internal/server"
+	"github.com/hadronomy/lair-api/internal/server"
 )
 
 type HelloResource struct{}

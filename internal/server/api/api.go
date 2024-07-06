@@ -2,11 +2,12 @@ package api
 
 import (
 	"fmt"
-	"lair-api/internal/database"
 	"net/http"
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/hadronomy/lair-api/internal/database"
 
 	"gorm.io/gorm"
 )

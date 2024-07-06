@@ -2,7 +2,8 @@ package resources
 
 import (
 	"fmt"
-	"lair-api/internal/server"
+
+	"github.com/hadronomy/lair-api/internal/server"
 
 	"github.com/charmbracelet/log"
 	"github.com/danielgtaylor/huma/v2"

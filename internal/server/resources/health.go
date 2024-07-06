@@ -5,8 +5,8 @@ import (
 
 	"github.com/danielgtaylor/huma/v2"
 
-	"lair-api/internal/database"
-	"lair-api/internal/server"
+	"github.com/hadronomy/lair-api/internal/database"
+	"github.com/hadronomy/lair-api/internal/server"
 )
 
 type HealthResource struct{}

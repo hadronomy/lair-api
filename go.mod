@@ -1,4 +1,4 @@
-module lair-api
+module github.com/hadronomy/lair-api
 
 go 1.22.3
 

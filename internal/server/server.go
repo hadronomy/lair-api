@@ -6,7 +6,7 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 	"gorm.io/gorm"
 
-	"lair-api/internal/database"
+	"github.com/hadronomy/lair-api/internal/database"
 )
 
 type Server interface {

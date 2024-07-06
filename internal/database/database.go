@@ -12,7 +12,7 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
-	"lair-api/internal/models"
+	"github.com/hadronomy/lair-api/internal/models"
 )
 
 // Service represents a service that interacts with a database.

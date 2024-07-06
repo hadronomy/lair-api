@@ -10,11 +10,10 @@ import (
 	"github.com/charmbracelet/log"
 	"github.com/danielgtaylor/huma/v2/humacli"
 
-	"lair-api/internal/server/api"
+	"github.com/hadronomy/lair-api/internal/server/api"
 )
 
-type Options struct {
-}
+type Options struct{}
 
 func main() {
 	cli := humacli.New(func(hooks humacli.Hooks, options *Options) {

@@ -6,9 +6,9 @@ import (
 
 	"github.com/danielgtaylor/huma/v2"
 
-	"lair-api/internal/crypto"
-	"lair-api/internal/models"
-	"lair-api/internal/server"
+	"github.com/hadronomy/lair-api/internal/crypto"
+	"github.com/hadronomy/lair-api/internal/models"
+	"github.com/hadronomy/lair-api/internal/server"
 )
 
 type GetLairsResponse struct {
@@ -56,7 +56,8 @@ func (l *LairResource) Init(api huma.API, s server.Server) {
 		Tags:        []string{"Lairs"},
 	}, func(ctx context.Context, input *struct {
 		Body models.LairRequest `json:"body"`
-	}) (*UpdateLairsResponse, error) {
+	},
+	) (*UpdateLairsResponse, error) {
 		id, err := crypto.GenerateID()
 		if err != nil {
 			return nil, huma.Error500InternalServerError("failed to generate ID")
@@ -85,7 +86,8 @@ func (l *LairResource) Init(api huma.API, s server.Server) {
 		Tags:        []string{"Lairs"},
 	}, func(ctx context.Context, input *struct {
 		LairID string `path:"lairID"`
-	}) (*GetLairResponse, error) {
+	},
+	) (*GetLairResponse, error) {
 		var lair models.Lair
 		if s.GetDB().Where("id = ?", input.LairID).First(&lair).Error != nil {
 			return nil, huma.Error404NotFound("lair not found")
@@ -104,7 +106,8 @@ func (l *LairResource) Init(api huma.API, s server.Server) {
 	}, func(ctx context.Context, input *struct {
 		ID   string             `path:"lairID"`
 		Body models.LairRequest `json:"body"`
-	}) (*UpdateLairsResponse, error) {
+	},
+	) (*UpdateLairsResponse, error) {
 		var lair models.Lair
 		if s.GetDB().Where("id = ?", input.ID).First(&lair).Error != nil {
 			return nil, huma.Error404NotFound("lair not found")
@@ -123,7 +126,8 @@ func (l *LairResource) Init(api huma.API, s server.Server) {
 		Tags:        []string{"Lairs"},
 	}, func(ctx context.Context, input *struct {
 		LairID string `path:"lairID"`
-	}) (*UpdateLairsResponse, error) {
+	},
+	) (*UpdateLairsResponse, error) {
 		var lair models.Lair
 		if s.GetDB().Where("id = ?", input.LairID).First(&lair).Error != nil {
 			return nil, huma.Error404NotFound("lair not found")
