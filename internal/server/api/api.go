@@ -1,12 +1,10 @@
 package api
 
 import (
-	"fmt"
-	"net/http"
 	"os"
 	"strconv"
-	"time"
 
+	"github.com/gofiber/fiber/v2"
 	"github.com/hadronomy/lair-api/internal/database"
 
 	"gorm.io/gorm"
@@ -15,28 +13,22 @@ import (
 type APIServer struct {
 	port int
 
-	db database.Service
+	db  database.Service
+	app *fiber.App
 }
 
-func NewServer() *http.Server {
+func NewServer() *APIServer {
 	env_port := os.Getenv("PORT")
 	port, _ := strconv.Atoi(env_port)
-	NewServer := &APIServer{
+
+	new_server := &APIServer{
 		port: port,
-
-		db: database.New(),
+		db:   database.New(),
 	}
 
-	// Declare Server config
-	server := &http.Server{
-		Addr:         fmt.Sprintf(":%d", NewServer.port),
-		Handler:      NewServer.RegisterRoutes(),
-		IdleTimeout:  time.Minute,
-		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 30 * time.Second,
-	}
+	new_server.app = new_server.RegisterRoutes()
 
-	return server
+	return new_server
 }
 
 func (s *APIServer) GetDBService() database.Service {
@@ -45,6 +37,10 @@ func (s *APIServer) GetDBService() database.Service {
 
 func (s *APIServer) GetDB() *gorm.DB {
 	return s.db.GetDB()
+}
+
+func (s *APIServer) GetApp() *fiber.App {
+	return s.app
 }
 
 func (s *APIServer) GetPort() int {
