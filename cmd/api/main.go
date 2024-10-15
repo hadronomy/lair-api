@@ -63,7 +63,10 @@ func printBanner(server *http.Server) {
 	description := descriptionStyle.Render(
 		fmt.Sprintf("(bound on host 0.0.0.0 and port %s)", server.Addr),
 	)
-	block := lipgloss.JoinVertical(lipgloss.Center, title, url, description)
+	docs_url := lipgloss.NewStyle().
+		Foreground(lipgloss.Color("86")).
+		Render(fmt.Sprintf("http://localhost%s/docs", server.Addr))
+	block := lipgloss.JoinVertical(lipgloss.Center, title, url, description, docs_url)
 	fmt.Println()
 	fmt.Println(style.Render(block))
 }
