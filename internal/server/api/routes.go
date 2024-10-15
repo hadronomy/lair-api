@@ -69,6 +69,7 @@ func (s *APIServer) configureRouter() *chi.Mux {
 	r.Use(render.SetContentType(render.ContentTypeJSON))
 
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
+		render.Status(r, http.StatusNotFound)
 		render.JSON(w, r, &huma.ErrorModel{
 			Title:    "Resource not found",
 			Status:   http.StatusNotFound,
@@ -78,6 +79,7 @@ func (s *APIServer) configureRouter() *chi.Mux {
 	})
 
 	r.MethodNotAllowed(func(w http.ResponseWriter, r *http.Request) {
+		render.Status(r, http.StatusMethodNotAllowed)
 		render.JSON(w, r, &huma.ErrorModel{
 			Title:    "Method not allowed",
 			Status:   http.StatusMethodNotAllowed,
