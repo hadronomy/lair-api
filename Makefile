@@ -6,14 +6,14 @@ all: build
 build:
 	@echo "Building..."
 	
-	@go build -o main cmd/api/main.go
+	@earthly +all
 
 # Run the application
 run:
 	@go run cmd/api/main.go
 
 # Create DB container
-docker-run:
+docker.up:
 	@if docker compose up 2>/dev/null; then \
 		: ; \
 	else \
@@ -22,7 +22,7 @@ docker-run:
 	fi
 
 # Shutdown DB container
-docker-down:
+docker.down:
 	@if docker compose down 2>/dev/null; then \
 		: ; \
 	else \

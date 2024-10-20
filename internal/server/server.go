@@ -1,8 +1,7 @@
 package server
 
 import (
-	"net/http"
-
+	"github.com/gofiber/fiber/v2"
 	_ "github.com/joho/godotenv/autoload"
 	"gorm.io/gorm"
 
@@ -13,5 +12,5 @@ type Server interface {
 	GetPort() int
 	GetDB() *gorm.DB
 	GetDBService() database.Service
-	RegisterRoutes() http.Handler
+	RegisterRoutes() *fiber.App
 }
